@@ -1,5 +1,8 @@
+---@diagnostic disable: undefined-global, need-check-nil
 -- Coded by Eryk 'RootKiller' Dwornicki
 -- Public domain licence.
+
+require "AI"
 
 local currentRoundTime = 0
 
@@ -82,7 +85,7 @@ function getCellIdFromPoint(px, py)
 	return getCellIdFromXY(x, y)
 end
 
-local currentPlayerShape = SHAPE_CIRCLE
+local currentPlayerShape = SHAPE_CROSS
 
 function switchPlayer()
 	if currentPlayerShape == SHAPE_CIRCLE then
@@ -211,12 +214,13 @@ function onCellClick(cell)
 		grid[cell] = currentPlayerShape
 		occupiedCells = occupiedCells + 1
 		local draw = occupiedCells == cols * rows
-		if hasCurrentPlayerWin(cell) or draw then
+		local win = hasCurrentPlayerWin(cell)
+		if win or draw then
 			playerWonTimer = 3.0
-			if draw then
-				matchDraw = true
-			else
+			if win then
 				playerWonShape = currentPlayerShape
+			else
+				matchDraw = true
 			end
 
 			resetPlayground()
@@ -236,8 +240,30 @@ end
 
 local wasMouseDown = false
 
+-- love key press function
+
+function love.keypressed(key)
+
+	if key == "r" then
+		resetPlayground()
+	end
+
+	if key == "escape" then
+		love.event.quit()
+	end
+	
+	onCellClick(tonumber(key))
+	onCellClick(tonumber(string.sub(key, 3)))
+
+end
+
 function love.draw()
-	love.graphics.clear(20, 20, 20)
+	if AI_ENABLE and currentPlayerShape == SHAPE_CIRCLE then
+		onCellClick(MaxPlayerO(grid)[2])
+	end
+	
+	-- love.graphics.clear(20, 20, 20)
+	
 
 	local wndWidth = love.graphics.getWidth()
 	local wndHeight = love.graphics.getHeight()
@@ -279,14 +305,14 @@ function love.draw()
 				highlightCell = {x = dx, y = dy}
 			end
 
-			love.graphics.setColor(80, 80, 80)
+			love.graphics.setColor(80/255, 80/255, 80/255)
 			love.graphics.print(tostring(idx), dx+10, dy+10)
 
-			love.graphics.setColor(50, 50, 50)
+			love.graphics.setColor(50/255, 50/255, 50/255)
 
 			love.graphics.rectangle("line", dx, dy, cellSize, cellSize)
 
-			love.graphics.setColor(180, 180, 180)
+			love.graphics.setColor(180/255, 180/255, 180/255)
 			drawShape(grid[idx], dx + 10, dy + 10, cellSize - 20, cellSize - 20, 30)
 
 			dx = dx + cellSize
