@@ -1,3 +1,5 @@
+-- Codyd by MohammadT9030
+
 require "AI_setting"
 
 local SHAPE_UNSET = 0
@@ -132,7 +134,7 @@ function Result(state0, action, player)
     return res
 end
 
-function MaxPlayerO(state0)
+function MaxPlayerO(state0, min_parent)
     local state = TableCopy(state0)
     if RANDOM_FIRST and state[1] == SHAPE_UNSET and state[2] == SHAPE_UNSET and state[3] == SHAPE_UNSET and state[4] == SHAPE_UNSET and state[5] == SHAPE_UNSET and state[6] == SHAPE_UNSET and state[7] == SHAPE_UNSET and state[8] == SHAPE_UNSET and state[9] == SHAPE_UNSET then
         math.randomseed(os.time())
@@ -148,18 +150,18 @@ function MaxPlayerO(state0)
     local action = 0
     for i = 1, 9 do
         if state[i] == SHAPE_UNSET then
-            local m = MinPlayerX(Result(state, i, SHAPE_CIRCLE))[1]
+            local m = MinPlayerX(Result(state, i, SHAPE_CIRCLE), max_utility)[1]
             if max_utility < m then
                 max_utility = m
                 action = i
             end
-            if max_utility == 1 then return {max_utility, action} end
+            if max_utility >= min_parent then return {1, action} end
         end
     end
     return {max_utility, action}
 end
 
-function MinPlayerX(state0)
+function MinPlayerX(state0, max_parent)
     local state = TableCopy(state0)
     local ter = Terminal(state)
     if ter.t then
@@ -170,12 +172,12 @@ function MinPlayerX(state0)
     local action = 0
     for i = 1, 9 do
         if state[i] == SHAPE_UNSET then
-            local m = MaxPlayerO(Result(state, i, SHAPE_CROSS))[1]
+            local m = MaxPlayerO(Result(state, i, SHAPE_CROSS), min_utility)[1]
             if min_utility > m then
                 min_utility = m
                 action = i
             end
-            if min_utility == -1 then return {min_utility, action} end
+            if min_utility <= max_parent then return {-1, action} end
         end
     end
     return {min_utility, action}

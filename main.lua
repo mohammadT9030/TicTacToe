@@ -259,8 +259,9 @@ end
 
 function love.draw()
 	if AI_ENABLE and currentPlayerShape == SHAPE_CIRCLE then
-		onCellClick(MaxPlayerO(grid)[2])
+		onCellClick(MaxPlayerO(grid,1)[2])
 	end
+
 	
 	-- love.graphics.clear(20, 20, 20)
 	

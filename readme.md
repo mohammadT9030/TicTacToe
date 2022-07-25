@@ -20,3 +20,7 @@ Licence
 ====
 
 The source is provided with no warranty under public domain licence. You can do whatever you want with it.
+
+====
+Update:
+There is an AI you can play with
